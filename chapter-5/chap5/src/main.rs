@@ -14,6 +14,12 @@ impl Rectangle {
     fn area(&self) -> u32{
         self.width*self.height
     }
+    fn square(size: u32) -> Self {
+        Self {
+            width:size,
+            height:size,
+        }
+    }
 }
 
 fn main() {
@@ -48,6 +54,9 @@ fn main() {
         height:10
     };
     println!("{}", rect1.area());
+
+    let nr = Rectangle::square(10);
+    println!("{}", nr.width)
 
 
 }
