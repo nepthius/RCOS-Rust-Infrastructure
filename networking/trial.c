@@ -9,7 +9,7 @@
 
 
 
-int main(){
+void getaddr_test(){
     int status;
     struct addrinfo hints;
     struct addrinfo *ret, *p;
@@ -33,7 +33,6 @@ int main(){
 
     if (status != 0) {
         fprintf(stderr, "getaddrinfo error: %s\n", gai_strerror(status));
-        return 1;
     }
 
     for(p=ret; p!=NULL; p=p->ai_next){
@@ -53,4 +52,33 @@ int main(){
         inet_ntop(p->ai_family, addr, ipstr, sizeof ipstr);
         printf("%s %s\n", ipstr, ipver);
     }
+}
+
+int main(){
+    int status;
+    struct addrinfo hints, *res;
+    struct sockaddr flame_on;
+
+    memset(&hints, 0, sizeof hints);
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_flags = AI_PASSIVE;
+    hints.ai_socktype = SOCK_STREAM;
+
+    int s = getaddrinfo(NULL, "3490", &hints, &res);
+
+    if (s!=0){
+        printf("ruh roh");
+        return 1;
+    }
+
+    s = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+    
+    int bv = bind(s, res->ai_addr, res->ai_addrlen);
+
+    int lv = listen(s, 10);
+
+    socklen_t addr_len = sizeof flame_on;
+    int new_fd = accept(s, (struct sockaddr *)&flame_on, &addr_len);
+
+    printf("%d", s);
 }
