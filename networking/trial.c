@@ -6,6 +6,7 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#include <unistd.h>
 
 
 
@@ -72,13 +73,14 @@ int main(){
     }
 
     s = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
-    
-    int bv = bind(s, res->ai_addr, res->ai_addrlen);
+    connect(s, res->ai_addr, res->ai_addrlen);
 
-    int lv = listen(s, 10);
 
     socklen_t addr_len = sizeof flame_on;
     int new_fd = accept(s, (struct sockaddr *)&flame_on, &addr_len);
-
-    printf("%d", s);
+    char *msg = "Ooga booga, server made";
+    int len = strlen(msg);
+    int  bs = send(s, msg, len, 0);
+    printf("%d", bs);
+    close(new_fd);
 }
