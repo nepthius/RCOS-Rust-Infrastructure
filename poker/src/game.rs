@@ -36,6 +36,34 @@ impl Game{
         self.players.push(p);
     }
 
+    fn handle_bets(players: &mut Vec<Player>, round_players: &mut HashSet<String>, min_bid: &mut i32){
+        for player in players{
+
+            if !round_players.contains(player.get_username()){
+                continue
+            }
+            print!("Please enter your bet amount (stack {} | round bid {min_bid}): ", player.get_stack());
+            io::stdout().flush().unwrap();
+            let mut size = String::new();
+            stdin().read_line(&mut size).expect("Ruh roh read");
+            size = size.trim().to_string();
+            let mut bid;
+            bid = size.parse::<i32>().unwrap();
+            if bid < *min_bid || bid > *player.get_stack(){
+                print!("Your bid was either too small for this round or too large for your stack");
+                round_players.remove(player.get_username());
+                continue;
+
+            }
+            player.sub(bid);
+            *min_bid = max(bid, *min_bid);
+
+            //print!("Current stack: {}", player.get_stack());
+            io::stdout().flush().unwrap();
+
+        }
+    }
+
     pub fn round(&mut self) {
         let mut deck = Deck::create();
         deck.shuffle();
@@ -57,32 +85,30 @@ impl Game{
         }
 
         
+        
         //preflop betting
-        for player in &mut self.players{
+        Game::handle_bets(&mut self.players, &mut round_players, &mut min_bid);
 
-            if !round_players.contains(player.get_username()){
-                continue
-            }
-            print!("Please enter your bet amount (stack {} | round bid {min_bid}): ", player.get_stack());
-            io::stdout().flush().unwrap();
-            let mut size = String::new();
-            stdin().read_line(&mut size).expect("Ruh roh read");
-            size = size.trim().to_string();
-            let mut bid;
-            bid = size.parse::<i32>().unwrap();
-            if bid < min_bid || bid > *player.get_stack(){
-                print!("Your bid was either too small for this round or too large for your stack");
-                round_players.remove(player.get_username());
-                continue;
+        let mut board = Vec::new();
 
-            }
-            player.sub(bid);
-            min_bid = max(bid, min_bid);
-
-            //print!("Current stack: {}", player.get_stack());
-            io::stdout().flush().unwrap();
-
+        for x in 0..3{
+            board.push(deck.get_card().to_string());
         }
+        println!("Board: {:?}", board);//replace with better board
+
+        //flop betting
+        Game::handle_bets(&mut self.players, &mut round_players, &mut min_bid);
+
+        board.push(deck.get_card().to_string());
+
+        //the turn betting
+        Game::handle_bets(&mut self.players, &mut round_players, &mut min_bid);
+
+        board.push(deck.get_card().to_string());
+
+        //river betting
+        Game::handle_bets(&mut self.players, &mut round_players, &mut min_bid);
+        
 
         
         
