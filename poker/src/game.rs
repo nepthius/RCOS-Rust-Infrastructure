@@ -69,7 +69,7 @@ impl Game{
         deck.shuffle();
         //each round go through each and see buy in
         //go through each player and prompt and update buy in
-        let mut min_bid = self.small;
+        let mut min_bid = self.big;
         let mut round_players =  HashSet::<String>::new();
 
         for player in &self.players{
@@ -88,27 +88,31 @@ impl Game{
         
         //preflop betting
         Game::handle_bets(&mut self.players, &mut round_players, &mut min_bid);
+        min_bid = self.big; 
 
         let mut board = Vec::new();
 
         for x in 0..3{
             board.push(deck.get_card().to_string());
         }
-        println!("Board: {:?}", board);//replace with better board
+        println!("Board: {:?}", board);//replace with better board ui
 
         //flop betting
         Game::handle_bets(&mut self.players, &mut round_players, &mut min_bid);
+        min_bid = self.big; 
 
         board.push(deck.get_card().to_string());
+        println!("Board: {:?}", board);//replace with better board ui
 
         //the turn betting
         Game::handle_bets(&mut self.players, &mut round_players, &mut min_bid);
-
+        min_bid = self.big;
         board.push(deck.get_card().to_string());
+        println!("Board: {:?}", board);//replace with better board ui
 
         //river betting
         Game::handle_bets(&mut self.players, &mut round_players, &mut min_bid);
-        
+
 
         
         

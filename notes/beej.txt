@@ -1,0 +1,110 @@
+Networking
+Covered: https://beej.us/guide/bgnet/pdf/bgnet_usl_c_1.pdf  (first 6 chaps)
+
+Beej notes
+What is a socket
+Way to speak to other programs using file descriptors
+File descriptor
+Integer associated with an open file
+Two types of sockets
+Stream sockets (TCP) - does guarantee delivery
+Beginning of TCP (opening)
+Reliable in two-way connected communication stream
+Need a open connection
+Client sends a syn, server responds with syn-ack, client sends ack
+If packet lost or arrives out of order, tcp resends
+Datagram sockets (UDP) - doesn’t guarantee delivery
+Connectionless 
+Faster
+No connection setup 
+Sends packets and doesn’t track
+Data encapsulation
+Packet created (data) -> packet wrapped in header by the first protocol, then it is encapsulated again by the next protocol, then again by the ip, and then the protocol on the hardware 
+Layered network model
+Application
+Presentation
+Session
+Transport
+Network
+Data Link
+Physical (hardware)
+Unix network model
+Application layer (telnet, ftp, etc.)
+Host-toHost transport layer (TCP, UDP)
+Internet layer (ip)
+Network access layer (wifi)
+Two byte ordering
+Big endian (store sequentially big end first)
+Network Byte Order
+Convert to network byte order before going out, and convert to host byte order coming in
+Little endian (stored with bytes reversed)
+Everyone kinda has to agree on how bytes are ordered
+So when sending packets you send it via network byte order, and then when receiving you convert to host byte order
+Function for sending out (htons host to network short, htonl host to network long, ntohs network to host short, nthol network to host long)
+Struct addrinfo (used in hostname lookups, and preps socket address structures for use)
+Int ai_flags
+AI_PASSIVE (auto assigns address of local host to socket)
+int ai_family; (ipv4/ipv6)
+int ai_socktype; (sock stream, dgram) - tcp/udp
+int ai_prtocol;
+size_t ai_addrlen;
+struct sockaddr *ai_addr;
+char *ai_canonname;
+struct addrinfo *ai_next;
+Struct sockaddr (holds socket address information for different sockets)
+Cast specific structs like sockaddr_in to it when using socket functions
+Ip address text -> bit
+Inet_pton
+Inet_ntop (binary to text) network to presentation 
+Network address translation (get addresses on a network that won’t route outside)
+Question could be how to convert from ipv4 to ipv6
+(gotta review this section, chapter 4), skipped for now since memorizing all the steps is a bit iffy
+sin_address?
+ Part of sockaddr_in struct
+socket 
+getaddrinfo(char *node, char *service, const struct addrinfo *hints, )
+Give it a host name/ip address (can be skipped if you set flag of addrinfo to AI_PASSIVE)
+Give it a service parameter (port # or name of service like http, ftp, etc.)
+Hints parameter addrinfo struct with relevant info filled out
+AI_family, AI_flags, AI_socktype
+Int socket(int domain, int type, int protocol);
+domain is what ip version, type is the sock_stream or dgram, and protocol can be 0 to choose proper protocol for a type {basically tcp or udp)
+Itn bind(int sockfd (number from socket), struct sockaddr *my_addr, int adrrlen)
+Sockaddr pointer that contains info about address such as port and ip address
+Int connect(int sockfd, struct sockaddr *serv_addr, int addrlen)
+listen(int sockfd, int backlog)
+accept (int sockfd, struct sockaddr *addr, soclen_t *addrlen)
+sockaddr storage struct
+Holds any sort of address (if you don’t know if it’s ipv4 or ipv6)
+Then you can typecast to sockaddr from there
+int send(int sockfd, const void *msg, int len, int flags (just set to 0));
+sockfd (socket you want to send message to), len is length of message in bytes, and flags can just be set to 0
+int recv(int sockfd, void *buf, int len, int flags);
+returns amount of bytes read into buffer
+Udp
+int sendto(int sockfd, const void *msg, int len, unsigned int flags, const struct sockaddr *to, soclen_t tolen);
+int recvfrom(int sockfd, void *buf, int len, unsigned int flags, struct sockaddr *from, int *fromlen);
+close(sockfd)
+getpeername(int sockfd, struct sockaddr, int addrlen) - tells you who is on the other side
+gethostname(hostname, size) - returns name of computer you are running on
+Basic server
+Client
+ gettaddrinfo()
+socket()
+connect()
+send()
+Server
+getaddrinfo()
+socket()
+bind()
+listen()
+recv()
+
+
+Look at chapter 6 again and try to build it
+
+Read this: 
+https://github.com/alex/what-happens-when 
+
+Rust translation of tcp
+TCPListner::bind(“127.0.0.1:3490”) - handles socket, bind, and listen

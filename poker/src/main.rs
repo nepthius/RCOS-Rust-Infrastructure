@@ -13,8 +13,6 @@ use std::io::{self, Write};
 
 
 fn main() {
-    println!("Hello, world!");
-    
     //deck testing
     /*
     let mut deck = Deck::create();
