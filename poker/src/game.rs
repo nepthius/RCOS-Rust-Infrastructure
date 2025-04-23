@@ -120,8 +120,27 @@ impl Game{
         //
     }
 
-    pub fn calculate_best_hand(&self) {
-        //priority (hand rank), card rank - dfs over hands and priorities
+    pub fn calculate_best_hand(player: &Player, board: &Vec<String>) -> (String, Vec<String>) {
+        let mut all_cards = player.view_cards().clone();
+        all_cards.extend(board.clone()); 
+    
+        let mut best_rank = 11;
+        let mut best_hand = Vec::new();
+        let mut best_label = String::new();
+    
+        for combo in all_cards.iter().combinations(5) {
+            let hand = combo.iter().map(|&s| s.to_string()).collect::<Vec<String>>();
+            let (rank, label) = rank_hand(&hand);
+    
+            if rank < best_rank {
+                best_rank = rank;
+                best_label = label;
+                best_hand = hand;
+            }
+        }
+    
+        println!("Best hand for {}: {} => {:?}", player.get_username(), best_label, best_hand);
+        (best_label, best_hand)
     }
 
 }
