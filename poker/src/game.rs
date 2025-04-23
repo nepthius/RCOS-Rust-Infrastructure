@@ -143,5 +143,44 @@ impl Game{
         (best_label, best_hand)
     }
 
+    fn rank_hand(hand: &Vec<String>) -> (u8, String) {
+        let mut values = Vec::new();
+        let mut suits = Vec::new();
+        
+
+        
+        for card in hand {
+            //print!("{}", card);
+            let (suit, value) = card.split_at(1);
+            suits.push(suit);
+            values.push(value.parse::<u8>().unwrap());
+        }
+    
+        values.sort_unstable();
+        let mut counts = HashMap::new();
+        for v in &values {
+            *counts.entry(v).or_insert(0) += 1;
+        }
+    
+        let is_flush = suits.iter().all(|&s| s == suits[0]);
+        let is_straight = values.windows(2).all(|w| w[1] == w[0] + 1);
+    
+        let mut freq = counts.values().cloned().collect::<Vec<u8>>();
+        freq.sort_unstable_by(|a, b| b.cmp(a));
+        match (is_flush, is_straight, freq.as_slice()) {
+            (true, true, _) if values.contains(&13) && values.contains(&1) => (1, "Royal Flush".to_string()),
+            (true, true, _) => (2, "Straight Flush".to_string()),
+            (_, _, [4, 1]) => (3, "Four of a Kind".to_string()),
+            (_, _, [3, 2]) => (4, "Full House".to_string()),
+            (true, _, _) => (5, "Flush".to_string()),
+            (_, true, _) => (6, "Straight".to_string()),
+            (_, _, [3, 1, 1]) => (7, "Three of a Kind".to_string()),
+            (_, _, [2, 2, 1]) => (8, "Two Pair".to_string()),
+            (_, _, [2, 1, 1, 1]) => (9, "One Pair".to_string()),
+            _ => (10, "High Card".to_string()),
+        }
+    }
+    
+
 }
 
