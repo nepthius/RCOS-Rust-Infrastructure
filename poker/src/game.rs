@@ -113,7 +113,7 @@ impl Game{
         //river betting
         Game::handle_bets(&mut self.players, &mut round_players, &mut min_bid);
 
-
+        
         
         
         //royal flush, 
@@ -121,7 +121,7 @@ impl Game{
     }
 
     pub fn calculate_best_hand(&self) {
-        //priority (hand rank), card rank
+        //priority (hand rank), card rank - dfs over hands and priorities
     }
 
 }

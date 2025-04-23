@@ -23,6 +23,7 @@ fn main() {
     println!("{:?}", deck.get_deck());
     */
 
+    /*
     let mut game = Game::new(8, 1000, 10, 20);
     game.print_game_info();
 
@@ -35,7 +36,7 @@ fn main() {
     println!("------------------");
     game.add_player(username);
     game.round();
-    
+    */
 
 }
 
