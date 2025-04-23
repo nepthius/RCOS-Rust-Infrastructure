@@ -118,7 +118,43 @@ impl Game{
         
         //royal flush, 
         //
-    }
+
+        let mut best_rank = 11;
+        let mut winners = Vec::new();
+        let mut best_hand_label = String::new();
+
+        //going through each player to rank
+        for player in &self.players {
+            let username = player.get_username();
+            if round_players.contains(username) {
+                let (label, hand) = calculate_best_hand(player, &board);
+                let (rank, _) = rank_hand(&hand);
+                println!("{} has a {} -> {:?}", username, label, hand);
+
+                if rank < best_rank {
+                    best_rank = rank;
+                    best_hand_label = label.clone();
+                    winners.clear();
+                    winners.push(username.clone());
+                } else if rank == best_rank {
+                    winners.push(username.clone());
+                }
+            }
+        }
+
+        //splitting pot based on chip count
+        let pot = self.pot;
+        let share = pot / winners.len() as i32;
+        for player in &mut self.players {
+            if winners.contains(&player.get_username().to_string()) {
+                player.add(share);
+                println!("{} wins {} chips with a {} YIPPEEEEE", player.get_username(), share, best_hand_label);
+            }
+        }
+
+        //removing pot
+        self.pot = 0;
+        }
 
     pub fn calculate_best_hand(player: &Player, board: &Vec<String>) -> (String, Vec<String>) {
         let mut all_cards = player.view_cards().clone();
